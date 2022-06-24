@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
 import Typography from "./components/atoms/typography";
 import { COLORS } from "./shared/theme/colors";
 import TodoForm from "./components/organism/todo-form";

@@ -17,7 +17,7 @@ export const Todo: FC<TodoProps> = ({ todo, isEven, toggleComplete = () => {} , 
   return (
     <div className={`todo-wrapper todo-wrapper-${isEven ? 'even' : 'odd'}`}>
       <div className={`todo-wrapper-element`}>
-        <input type="checkbox"  onChange={(e) => toggleComplete(todo, e.target.checked)}/>
+        <input type="checkbox" checked={todo.status === 1}  onChange={(e) => toggleComplete(todo, e.target.checked)}/>
         <div className={`todo-wrapper-information`}>
           <Typography color={COLORS.textColor} textDecoration={todo.status === 1 ? 'line-through' : ''}>
             {todo.description}
