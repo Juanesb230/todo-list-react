@@ -1,19 +1,27 @@
 import { FC, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { useAppSelector } from '../../../redux/hooks'
 import { ITodoResponse } from '../../../models'
-import { useCreateTodo } from '../../../hooks/useCreateTodo'
-import { useUpdateTodo } from '../../../hooks/useUpdateTodo'
+import { useAddNewTodoMutation, selectById, useUpdateTodoMutation } from '../../../redux/api/apiSlices'
+
 import { Button } from '../../atoms/button'
 import { Input } from '../../atoms/input'
 import Typography from '../../atoms/typography'
 import './index.scss'
 
-const TodoForm: FC<any> = (initialValue = { description: '', finish_at: '', status: 0 }) => {
+const TodoForm: FC = () => {
 
+  const { id = null } = useParams<any>()
   const history = useHistory()
-  const { pathname } = useLocation() 
+  const { pathname } = useLocation()
 
-  const [todo, setTodo] = useState<ITodoResponse>(initialValue.initialValue)
+  const data = useAppSelector(state => selectById(state, id))
+  const initialTodo = id ? data : { description: '', finish_at: '', status: 0 } 
+  const [todo, setTodo] = useState<ITodoResponse>(initialTodo as ITodoResponse)
+
+  const [addNewTodo] = useAddNewTodoMutation()
+  const [updateTodo] = useUpdateTodoMutation()
+
   const handleOnChange = (property: 'description' | 'finish_at') => (value: string) => {
     setTodo(current => ({
       ...current,
@@ -21,16 +29,13 @@ const TodoForm: FC<any> = (initialValue = { description: '', finish_at: '', stat
     }))
   }
 
-  const { refetch } = useCreateTodo()
-  const { refetch: onUpdate } = useUpdateTodo()
-
   const goToList = () => {
     history.push('/')
   }
 
-  const createList = async () => {
-    if (pathname === '/create') await refetch(todo)
-    if (pathname === '/update') await onUpdate(todo)
+  const createTodo = async () => {
+    if (pathname === '/create') await addNewTodo(todo)
+    if (pathname.includes('/update')) await updateTodo(todo)
     history.push('/')
   }
 
@@ -51,7 +56,7 @@ const TodoForm: FC<any> = (initialValue = { description: '', finish_at: '', stat
     </div>
     <div className='todo-form-button-container'>
       <Button variant='secondary' onClick={goToList}> Volver </Button>
-      <Button onClick={createList} disabled={!(todo.finish_at && todo.description)}> Agregar </Button>
+      <Button onClick={createTodo} disabled={!(todo.finish_at && todo.description)}> Agregar </Button>
     </div>
   </div>
 }

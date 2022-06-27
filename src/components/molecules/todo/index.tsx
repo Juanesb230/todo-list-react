@@ -1,4 +1,5 @@
 import { FC } from "react"
+import { useCompletedTodoMutation } from "../../../redux/api/apiSlices"
 import { ITodoResponse } from "../../../models"
 import { COLORS } from "../../../shared/theme/colors"
 import { IconButton } from "../../atoms/icon-button"
@@ -7,15 +8,20 @@ import './index.scss'
 export interface TodoProps {
   todo: ITodoResponse
   isEven: boolean
-  toggleComplete?(todo: ITodoResponse, status : boolean): void
   deleteTodo?(todo: ITodoResponse): void
   updateTodo?(todo: ITodoResponse): void
 }
 
-export const Todo: FC<TodoProps> = ({ todo, isEven, toggleComplete = () => {} , deleteTodo = () => {}, updateTodo = () => {} }) => {
+export const Todo: FC<TodoProps> = ({ todo, isEven , deleteTodo = () => {}, updateTodo = () => {} }) => {
+
+  const [completeTodo] = useCompletedTodoMutation()
+
+  const toggleComplete = async (todo: ITodoResponse, status: boolean) => {
+    await completeTodo({...todo, status: Number(status)} as ITodoResponse)
+  }
 
   return (
-    <div className={`todo-wrapper todo-wrapper-${isEven ? 'even' : 'odd'}`}>
+    <div data-testid="todo-item" className={`todo-wrapper todo-wrapper-${isEven ? 'even' : 'odd'}`}>
       <div className={`todo-wrapper-element`}>
         <input type="checkbox" checked={todo.status === 1}  onChange={(e) => toggleComplete(todo, e.target.checked)}/>
         <div className={`todo-wrapper-information`}>

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Typography from "./components/atoms/typography";
 import { COLORS } from "./shared/theme/colors";
 import TodoForm from "./components/organism/todo-form";
@@ -9,15 +8,8 @@ import {
   Route,
 } from "react-router-dom";
 import './App.css'
-import { ITodoResponse } from "./models";
 
 const App = () => {
-
-  const [initialValue, setinitialValue] = useState({ description: '', finish_at: '', status: 0 })
-
-  const updateTodo = async (todo: ITodoResponse) => {
-    await setinitialValue(todo)
-  }
 
   return (
     <div className="app-container">
@@ -27,13 +19,13 @@ const App = () => {
       <Router>
         <Switch>
           <Route exact path="/">
-            <TodoList updateTodo={updateTodo}></TodoList>
+            <TodoList></TodoList>
           </Route>
           <Route path="/create">
-            <TodoForm initialValue={{ description: '', finish_at: '', status: 0 }}></TodoForm>
+            <TodoForm></TodoForm>
           </Route>
-          <Route path="/update">
-            <TodoForm initialValue={initialValue}></TodoForm>
+          <Route path="/update/:id">
+            <TodoForm></TodoForm>
           </Route>
         </Switch>
       </Router>

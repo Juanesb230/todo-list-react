@@ -1,102 +1,80 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { useDelete } from '../../../hooks/useDelete';
-import { useList } from "../../../hooks/useLists";
-import { useCompletedTodo } from '../../../hooks/useCompletedTodo';
-import { ITodoResponse } from '../../../models';
+import { useAppSelector } from '../../../redux/hooks'
+import {
+  useDeleteTodoMutation,
+  selectNoCompleteTodos,
+  selectAll,
+  searchAllTodos,
+  searchNoCompleteTodos,
+} from '../../../redux/api/apiSlices'
+
+import { ITodoResponse } from '../../../models'
 import { Button } from '../../atoms/button'
 import { Input } from '../../atoms/input';
 import Typography from '../../atoms/typography'
 import { Todo } from '../../molecules/todo'
-import './index.css'
+import './index.scss'
 
-const TodoList: FC<any> = ({ updateTodo }) => {
+const TodoList: FC = () => {
 
   const history = useHistory()
-
-  const { todos, refetch, setTodos } = useList()
-  const { refetch: onDelete } = useDelete()
-  const { refetch: onCompleted } = useCompletedTodo()
-  const [renderTodos, setrenderTodos] = useState<ITodoResponse[]>([])
   const [filterOption, setfilterOption] = useState('completed')
+  const [searchValue, setsearchValue] = useState('')
+  const total = useAppSelector((state) => selectAll(state).length)
+  const todosCompleted = total - useAppSelector((state) => selectNoCompleteTodos(state).length)
+  const todos = useAppSelector((state: any) => {
+    if (filterOption === 'all') return searchNoCompleteTodos(state, searchValue)
+    return searchAllTodos(state, searchValue)
+  })
 
-  useEffect(() => {
-    refetch()
-    // eslint-disable-next-line
-  }, [])
-
-  useEffect(() => {
-    if(todos.length > 0) setrenderTodos(todos)
-  }, [todos])
+  const [deleteOneTodo] = useDeleteTodoMutation()
 
   const goToCreate = () => {
     history.push('/create')
   }
 
-  const deleteTodo = async(todo: ITodoResponse) => {
-    await onDelete(todo.id || -2)
-    setTodos(current => {
-      const data = current.filter(currentTodo => currentTodo.id !== todo.id)
-      return data
-    })
-  }
-
-  const toggleComplete = async(todo: ITodoResponse, status: boolean) => {
-    await onCompleted(todo, status)
-    await refetch()
+  const deleteTodo = async (todo: ITodoResponse) => {
+    await deleteOneTodo(todo)
   }
 
   const onUpdate = async (todo: ITodoResponse) => {
-    await updateTodo(todo)
-    history.push('/update')
+    history.push(`/update/${todo.id}`)
   }
 
   const onFiltered = (value: string) => {
-    if (value)
-      setrenderTodos( current => {
-        const data = current.filter(currentTodo => currentTodo.description.toLowerCase().includes(value.toLowerCase()))
-        return data
-      })
-    else {
-      setrenderTodos(todos)
-      setfilterOption('completed')
-    }
+    setsearchValue(value)
   }
 
   const onFilteredClick = () => {
-    if (filterOption === 'completed') {
-      setfilterOption('all')
-      setrenderTodos( current => {
-        const data = current.filter(currentTodo => currentTodo.status === 0)
-        return data
-      })
-    }
-    if (filterOption === 'all') {
-      setfilterOption('completed')
-      setrenderTodos(todos)
-    }
+    setfilterOption(current => {
+      if (current === 'all') return 'completed'
+      return 'all'
+    })
   }
 
   return (
     <>
-      <div className='my-8' style={{display: 'flex'}}>
+      <div className='my-8' style={{ display: 'flex' }}>
         <Input placeholder='Buscar tarea' initialValue={''} onChange={onFiltered} />
         <Button onClick={goToCreate} ><i className="fa-solid fa-plus"></i></Button>
       </div>
       <div>
         {
-          renderTodos.length === 0 ?
+          todos.length === 0 ?
             <Typography fontSize='32' color='skyblue' align='center'>No tienes tareas registradas</Typography>
-          :
-          renderTodos.map((todo, index) =>
-            <Todo key={index} isEven={index % 2 === 0} todo={todo} updateTodo={onUpdate} deleteTodo={deleteTodo} toggleComplete={toggleComplete}/>
-          )
+            :
+            todos.map((todo, index) =>
+              <Todo key={index} isEven={index % 2 === 0} todo={todo as ITodoResponse} updateTodo={onUpdate} deleteTodo={deleteTodo} />
+            )
         }
       </div>
-      <br/>
+      <br />
       <div>
-        {renderTodos.filter(renderTodo => renderTodo.status > 0).length} de {renderTodos.length} tarea(s) completada(s)
-        <br/><br/>
+        <div className='todo-list-bar' style={{ background: `linear-gradient(to right, yellow 0%, yellow ${(todosCompleted/total)*100}%, white ${(todosCompleted/total)*100}%, white 100%)` }}>
+          {todosCompleted} de {total} tarea(s) completada(s)
+        </div>
+        <br />
         <Button onClick={onFilteredClick}>
           {filterOption === 'completed' ? 'Mostrar no completados' : 'Mostrar todos'}
           <i className="fa-solid fa-address-card"></i></Button>
