@@ -46,11 +46,11 @@ const TodoList: FC<TodoListProps> = ({updateTodo}) => {
     settodosRender(current => current.filter(t => t.id !== todo.id))
   }
 
-  const toggleComplete = async (todo: ITodoResponse, status: number) => {
+  const toggleComplete = async (todo: ITodoResponse) => {
     settodosRender(current => 
-      current.map(t => t.id === todo.id ? {...t, status}: t)
+      current.map(t => t.id === todo.id ? todo: t)
     )
-    await axios.put(`https://bp-todolist.herokuapp.com/${todo.id}`, {...todo, id_author: AUTHOR_ID, status})
+    await axios.put(`https://bp-todolist.herokuapp.com/${todo.id}`, {...todo, id_author: AUTHOR_ID})
   }
 
   return (

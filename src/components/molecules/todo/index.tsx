@@ -9,7 +9,7 @@ import './index.scss'
 export interface TodoProps {
   todo: ITodoResponse
   isEven: boolean
-  toggleComplete?(todo: ITodoResponse, status: number): void
+  toggleComplete?(todo: ITodoResponse): void
   deleteTodo?(todo: ITodoResponse): void
   updateTodo?(todo: ITodoResponse): void
 }
@@ -20,8 +20,8 @@ export const Todo: FC<TodoProps> = ({ todo, isEven, toggleComplete = () => {} , 
 
   const changeStatus = async () => {
     setisChecked(!isChecked)
-    const status = !isChecked ? 1 : 0
-    toggleComplete(todo, status)
+    const updatedTodo = {...todo, status: !isChecked ? 1 : 0}
+    toggleComplete(updatedTodo)
   }
 
   return (

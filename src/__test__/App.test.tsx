@@ -1,6 +1,5 @@
-import { fireEvent, render, screen, waitFor, cleanup } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor, cleanup, act } from "@testing-library/react"
 import userEvent from '@testing-library/user-event';
-import axios from "axios";
 import App from "../App"
 import { axiosMock } from '../setupTests';
 
@@ -33,7 +32,6 @@ describe('TodoList App tests', () => {
   afterEach(cleanup)
 
   it('Should render a list with several todos', async () => {
-    
     render(<App />)
     screen.getByText('Todo List')
     await waitFor(() => {
@@ -43,36 +41,42 @@ describe('TodoList App tests', () => {
   })
 
   it('Should create a new todo', async () => {
-    axiosMock.get.mockResolvedValueOnce(
-      {
-        data: {
-          data: [
-            {
-              description: 'Test 1',
-              finish_at: new Date().toString(),
-              id: 1,
-              id_author: 1,
-              status: 0
-            },
-            {
-              description: 'Test 2',
-              finish_at: new Date().toString(),
-              id: 2,
-              id_author: 1,
-              status: 0
-            },
-            {
-              description: 'Test 3',
-              finish_at: new Date().toString(),
-              id: 2,
-              id_author: 1,
-              status: 0
-            }
-          ]
-        }
-      });
+    act(() => {
+      axiosMock.get.mockResolvedValueOnce(
+        {
+          data: {
+            data: [
+              {
+                description: 'Test 1',
+                finish_at: new Date().toString(),
+                id: 1,
+                id_author: 1,
+                status: 0
+              },
+              {
+                description: 'Test 2',
+                finish_at: new Date().toString(),
+                id: 2,
+                id_author: 1,
+                status: 0
+              },
+              {
+                description: 'Test 3',
+                finish_at: new Date().toString(),
+                id: 2,
+                id_author: 1,
+                status: 0
+              }
+            ]
+          }
+        })
+    });
     render(<App />)
     screen.getByText('Todo List')
+    await waitFor(() => {
+      screen.getByText('Test 1')
+      screen.getByText('Test 2')
+    })
     fireEvent.click(screen.getByTestId('add-todo'))
     screen.getByText('Descripción')
     screen.getByText('Fecha limite')
@@ -122,6 +126,10 @@ describe('TodoList App tests', () => {
       });
     render(<App />)
     screen.getByText('Todo List')
+    await waitFor(() => {
+      screen.getByText('Test 1')
+      screen.getByText('Test 2')
+    })
     fireEvent.click(screen.getByTestId('add-todo'))
     screen.getByText('Descripción')
     screen.getByText('Fecha limite')
@@ -134,6 +142,7 @@ describe('TodoList App tests', () => {
     expect(screen.queryByText('Descripcion requerida')).not.toBeInTheDocument()
     expect(screen.queryByText('Fecha requerida')).not.toBeInTheDocument()
     fireEvent.click(screen.getByText('Agregar'))
+    await waitFor(() => { screen.getByText('Test 3') })
   })
 
   it('Should update a todo, description and date', async () => {
