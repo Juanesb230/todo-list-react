@@ -10,7 +10,6 @@ import { Button } from '../../atoms/button'
 import Typography from '../../atoms/typography';
 import { Todo } from '../../molecules/todo'
 import './index.css'
-import { current } from '@reduxjs/toolkit';
 
 export interface TodoListProps {
   updateTodo: (todo: ITodoResponse) => void
@@ -21,6 +20,8 @@ const TodoList: FC<TodoListProps> = ({updateTodo}) => {
   const history = useHistory()
   const { todos, refetch } = useList()
   const [todosRender, settodosRender] = useState(todos)
+  const todosCompleted = todosRender.filter(t => t.status === 1).length
+  const total = todosRender.length
 
   useEffect(() => {
     refetch()
@@ -62,8 +63,11 @@ const TodoList: FC<TodoListProps> = ({updateTodo}) => {
         { todosRender.map((todo, index) =>
           <Todo key={index} isEven={index % 2 === 0} todo={todo} updateTodo={redirectUpdate} deleteTodo={deleteTodo} toggleComplete={toggleComplete}/>
         )}
-        <div style={{border: '1px solid black'}}>
-          { todosRender.filter(t => t.status === 1).length } de { todosRender.length } completados
+        <div style={{
+          border: '1px solid black',
+          background: `linear-gradient(to right, yellow 0%, yellow ${(todosCompleted/total)*100}%, white ${(todosCompleted/total)*100}%, white 100%)`
+          }}>
+          { todosCompleted } de { total } completados
         </div>
       </div>
     </>
