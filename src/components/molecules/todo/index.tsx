@@ -1,9 +1,7 @@
 import { FC, useState } from "react"
-import axios from "axios"
 
 import { ITodoResponse } from "../../../models"
 import { COLORS } from "../../../shared/theme/colors"
-import { AUTHOR_ID } from "../../../constants/app"
 
 import { IconButton } from "../../atoms/icon-button"
 import Typography from "../../atoms/typography"
