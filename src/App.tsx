@@ -1,31 +1,18 @@
+import { useState } from "react";
 import Typography from "./components/atoms/typography";
 import { COLORS } from "./shared/theme/colors";
 import TodoForm from "./components/organism/todo-form";
 import TodoList from "./components/organism/todo-list";
-import { ITodoResponse } from "./models";
-import { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Switch,
   Route,
 } from "react-router-dom";
-import { useList } from "./hooks/useLists";
 import './App.css'
 
 const App = () => {
 
-  const { todos: todosList, refetch } = useList()
-
-  const [todos, setTodos] = useState<ITodoResponse[]>([])
-
-  useEffect(() => {
-    setTodos(todosList)
-  }, [todosList])
-
-  useEffect(() => {
-    refetch()
-    // eslint-disable-next-line
-  }, [])
+  const [initialValue, setinitialValue] = useState({ description: '', finish_at: '', status: 0 })
 
   return (
     <div className="app-container">
@@ -35,10 +22,13 @@ const App = () => {
       <Router>
         <Switch>
           <Route exact path="/">
-            <TodoList todoList={[...todos]}></TodoList>
+            <TodoList updateTodo={(todo) => setinitialValue(todo)}></TodoList>
           </Route>
           <Route path="/create">
-            <TodoForm ></TodoForm>
+            <TodoForm></TodoForm>
+          </Route>
+          <Route path="/update">
+            <TodoForm initialTodo={initialValue}></TodoForm>
           </Route>
         </Switch>
       </Router>

@@ -8,6 +8,6 @@ export interface IconButtonProps {
 
 export const IconButton:FC<IconButtonProps> = ({className, onClick = () =>{}}) => {
   return (
-    <i className={`icon-button ${className}`} onClick={onClick}></i>
+    <i data-testid={className} className={`icon-button ${className}`} onClick={onClick}></i>
   )
 }

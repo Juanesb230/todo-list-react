@@ -1,22 +1,35 @@
-import { FC } from "react"
+import { FC, useState } from "react"
+import axios from "axios"
+
 import { ITodoResponse } from "../../../models"
 import { COLORS } from "../../../shared/theme/colors"
+import { AUTHOR_ID } from "../../../constants/app"
+
 import { IconButton } from "../../atoms/icon-button"
 import Typography from "../../atoms/typography"
 import './index.scss'
 export interface TodoProps {
   todo: ITodoResponse
   isEven: boolean
-  toggleComplete?(todo: ITodoResponse): void
+  toggleComplete?(todo: ITodoResponse, status: number): void
   deleteTodo?(todo: ITodoResponse): void
+  updateTodo?(todo: ITodoResponse): void
 }
 
-export const Todo: FC<TodoProps> = ({ todo, isEven, toggleComplete = () => {} , deleteTodo = () => {} }) => {
+export const Todo: FC<TodoProps> = ({ todo, isEven, toggleComplete = () => {} , deleteTodo = () => {}, updateTodo = () => {} }) => {
+
+  const [isChecked, setisChecked] = useState(!!todo.status)
+
+  const changeStatus = async () => {
+    setisChecked(!isChecked)
+    const status = !isChecked ? 1 : 0
+    toggleComplete(todo, status)
+  }
 
   return (
     <div className={`todo-wrapper todo-wrapper-${isEven ? 'even' : 'odd'}`}>
       <div className={`todo-wrapper-element`}>
-        <input type="checkbox"/>
+        <input type="checkbox" checked={isChecked} onChange={changeStatus}/>
         <div className={`todo-wrapper-information`}>
           <Typography color={COLORS.textColor}>
             {todo.description}
@@ -27,8 +40,8 @@ export const Todo: FC<TodoProps> = ({ todo, isEven, toggleComplete = () => {} , 
         </div>
       </div>
       <div className={`todo-wrapper-information`}>
-        <IconButton className="fa-solid fa-pencil"></IconButton>
-        <IconButton className="fa-solid fa-trash-can" ></IconButton>
+        <IconButton className="fa-solid fa-pencil" onClick={() => updateTodo(todo)}></IconButton>
+        <IconButton className="fa-solid fa-trash-can" onClick={() => deleteTodo(todo)}></IconButton>
       </div>
     </div>
   )

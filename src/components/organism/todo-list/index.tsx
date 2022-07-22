@@ -1,28 +1,55 @@
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
+import axios from 'axios';
 
-import { ITodoResponse } from '../../../models'
+import { AUTHOR_ID } from '../../../constants/app';
 import { useList } from "../../../hooks/useLists";
+import { ITodoResponse } from '../../../models';
 
 import { Button } from '../../atoms/button'
+import Typography from '../../atoms/typography';
 import { Todo } from '../../molecules/todo'
 import './index.css'
+import { current } from '@reduxjs/toolkit';
+
 export interface TodoListProps {
-  todoList: ITodoResponse[]
+  updateTodo: (todo: ITodoResponse) => void
 }
 
-const TodoList: FC<TodoListProps> = ({ todoList }) => {
+const TodoList: FC<TodoListProps> = ({updateTodo}) => {
 
   const history = useHistory()
-  const { refetch } = useList()
+  const { todos, refetch } = useList()
+  const [todosRender, settodosRender] = useState(todos)
 
   useEffect(() => {
     refetch()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  
+
+  useEffect(() => {
+    settodosRender(todos)
+  }, [todos])
 
   const goToCreate = () => {
     history.push('/create')
+  }
+
+  const redirectUpdate = (todo: ITodoResponse) => {
+    updateTodo(todo)
+    history.push('/update')
+  }
+
+  const deleteTodo = async (todo: ITodoResponse) => {
+    await axios.delete(`https://bp-todolist.herokuapp.com/${todo.id}`)
+    settodosRender(current => current.filter(t => t.id !== todo.id))
+  }
+
+  const toggleComplete = async (todo: ITodoResponse, status: number) => {
+    settodosRender(current => 
+      current.map(t => t.id === todo.id ? {...t, status}: t)
+    )
+    await axios.put(`https://bp-todolist.herokuapp.com/${todo.id}`, {...todo, id_author: AUTHOR_ID, status})
   }
 
   return (
@@ -31,9 +58,13 @@ const TodoList: FC<TodoListProps> = ({ todoList }) => {
         <Button onClick={goToCreate} ><i data-testid="add-todo" className="fa-solid fa-plus"></i></Button>
       </div>
       <div>
-        {todoList.map((todo, index) =>
-          <Todo key={index} isEven={index % 2 === 0} todo={todo} />
+        { todosRender.length === 0 && <Typography>No hay todos en la lista</Typography>}
+        { todosRender.map((todo, index) =>
+          <Todo key={index} isEven={index % 2 === 0} todo={todo} updateTodo={redirectUpdate} deleteTodo={deleteTodo} toggleComplete={toggleComplete}/>
         )}
+        <div style={{border: '1px solid black'}}>
+          { todosRender.filter(t => t.status === 1).length } de { todosRender.length } completados
+        </div>
       </div>
     </>
   )
