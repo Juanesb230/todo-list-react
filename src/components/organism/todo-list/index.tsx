@@ -1,6 +1,9 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
+
 import { ITodoResponse } from '../../../models'
+import { useList } from "../../../hooks/useLists";
+
 import { Button } from '../../atoms/button'
 import { Todo } from '../../molecules/todo'
 import './index.css'
@@ -11,6 +14,12 @@ export interface TodoListProps {
 const TodoList: FC<TodoListProps> = ({ todoList }) => {
 
   const history = useHistory()
+  const { refetch } = useList()
+
+  useEffect(() => {
+    refetch()
+  }, [])
+  
 
   const goToCreate = () => {
     history.push('/create')
@@ -19,7 +28,7 @@ const TodoList: FC<TodoListProps> = ({ todoList }) => {
   return (
     <>
       <div className='my-8'>
-        <Button onClick={goToCreate} ><i className="fa-solid fa-plus"></i></Button>
+        <Button onClick={goToCreate} ><i data-testid="add-todo" className="fa-solid fa-plus"></i></Button>
       </div>
       <div>
         {todoList.map((todo, index) =>
