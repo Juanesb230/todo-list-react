@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, cleanup, act } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor, cleanup } from "@testing-library/react"
 import userEvent from '@testing-library/user-event';
 import App from "../App"
 import { axiosMock } from '../setupTests';
@@ -24,12 +24,16 @@ describe('TodoList App tests', () => {
               id_author: 1,
               status: 0
             }
-          ]
+          ],
+          success: true
         }
       });
   })
 
-  afterEach(cleanup)
+  afterEach(() => {
+    cleanup()
+    jest.clearAllMocks()
+  })
 
   it('Should render a list with several todos', async () => {
     render(<App />)
@@ -41,61 +45,7 @@ describe('TodoList App tests', () => {
   })
 
   it('Should create a new todo', async () => {
-    act(() => {
-      axiosMock.get.mockResolvedValueOnce(
-        {
-          data: {
-            data: [
-              {
-                description: 'Test 1',
-                finish_at: new Date().toString(),
-                id: 1,
-                id_author: 1,
-                status: 0
-              },
-              {
-                description: 'Test 2',
-                finish_at: new Date().toString(),
-                id: 2,
-                id_author: 1,
-                status: 0
-              },
-              {
-                description: 'Test 3',
-                finish_at: new Date().toString(),
-                id: 2,
-                id_author: 1,
-                status: 0
-              }
-            ]
-          }
-        })
-    });
-    render(<App />)
-    screen.getByText('Todo List')
-    await waitFor(() => {
-      screen.getByText('Test 1')
-      screen.getByText('Test 2')
-    })
-    fireEvent.click(screen.getByTestId('add-todo'))
-    screen.getByText('Descripción')
-    screen.getByText('Fecha limite')
-    const inputDescription = screen.getByPlaceholderText('Descripción')
-    const inputDate = screen.getByPlaceholderText('Fecha limite')
-    userEvent.type(inputDescription, 'Test 3')
-    userEvent.type(inputDate, '2020-07-22')
-    expect(inputDescription).toHaveValue('Test 3')
-    expect(inputDate).toHaveValue('2020-07-22')
-    fireEvent.click(screen.getByText('Agregar'))
-    await waitFor(() => { screen.getByText('Test 3') })
-  })
-
-  /**
-  * 
-  * Probar que el formulario muestre los mensajes de requerimiento cuando 
-  * el formulario no tenga la descripción y la fecha ingresada 
- */
-  it('Should validate the todo form, description and date required', async () => {
+    axiosMock.post.mockResolvedValueOnce({data: {success: true}})
     axiosMock.get.mockResolvedValueOnce(
       {
         data: {
@@ -121,7 +71,63 @@ describe('TodoList App tests', () => {
               id_author: 1,
               status: 0
             }
-          ]
+          ],
+          success: true
+        }
+      });
+    render(<App />)
+    screen.getByText('Todo List')
+    await waitFor(() => {
+      screen.getByText('Test 1')
+      screen.getByText('Test 2')
+    })
+    fireEvent.click(screen.getByTestId('add-todo'))
+    screen.getByText('Descripción')
+    screen.getByText('Fecha limite')
+    const inputDescription = screen.getByPlaceholderText('Descripción')
+    const inputDate = screen.getByPlaceholderText('Fecha limite')
+    userEvent.type(inputDescription, 'Test 3')
+    userEvent.type(inputDate, '2020-07-22')
+    expect(inputDescription).toHaveValue('Test 3')
+    expect(inputDate).toHaveValue('2020-07-22')
+    fireEvent.click(screen.getByText('Agregar'))
+    await waitFor(() => { screen.getByText('Test 3') })
+  })
+
+  /**
+  * 
+  * Probar que el formulario muestre los mensajes de requerimiento cuando 
+  * el formulario no tenga la descripción y la fecha ingresada 
+ */
+  it('Should validate the todo form, description and date required', async () => {
+    axiosMock.post.mockResolvedValueOnce({data: {success: true}})
+    axiosMock.get.mockResolvedValueOnce(
+      {
+        data: {
+          data: [
+            {
+              description: 'Test 1',
+              finish_at: new Date().toString(),
+              id: 1,
+              id_author: 1,
+              status: 0
+            },
+            {
+              description: 'Test 2',
+              finish_at: new Date().toString(),
+              id: 2,
+              id_author: 1,
+              status: 0
+            },
+            {
+              description: 'Test 3',
+              finish_at: new Date().toString(),
+              id: 2,
+              id_author: 1,
+              status: 0
+            }
+          ],
+          success: true
         }
       });
     render(<App />)
@@ -146,6 +152,7 @@ describe('TodoList App tests', () => {
   })
 
   it('Should update a todo, description and date', async () => {
+    axiosMock.put.mockResolvedValueOnce({data: {success: true}})
     axiosMock.get.mockResolvedValueOnce(
       {
         data: {
@@ -164,7 +171,8 @@ describe('TodoList App tests', () => {
               id_author: 1,
               status: 0
             }
-          ]
+          ],
+          success: true
         }
       });
     render(<App />)
@@ -189,8 +197,8 @@ describe('TodoList App tests', () => {
     })
   })
 
-
   it('Should delete a todo', async () => {
+    axiosMock.delete.mockResolvedValueOnce({data: {success: true}})
     render(<App />)
     screen.getByText('Todo List')
     await waitFor(() => {
@@ -214,6 +222,7 @@ describe('TodoList App tests', () => {
   * el formulario no tenga la descripción y la fecha ingresada 
  */
   it('Should update the todo status', async () => {
+    axiosMock.put.mockResolvedValueOnce({data: {success: true}})
     render(<App />)
     screen.getByText('Todo List')
     await waitFor(() => {
@@ -256,7 +265,15 @@ describe('TodoList App tests', () => {
    * Probar el filtro de las tareas por descripcion
   */
   it('Should filter the todo list by description', async () => {
-
+    render(<App />)
+    screen.getByText('Todo List')
+    await waitFor(() => {
+      screen.getByText('Test 1')
+      screen.getByText('Test 2')
+    })
+    userEvent.type(screen.getByPlaceholderText('Buscar tarea'), '1')
+    screen.getByText('Test 1')
+    expect(screen.queryByText('Test 2')).not.toBeInTheDocument()
   })
 
   /**
@@ -265,7 +282,21 @@ describe('TodoList App tests', () => {
    * sobre el boton del filtro se muestren todos la lista nuevamente 
   */
   it('Should filter the todo list by completed status and toggle functionality button', async () => {
-
+    render(<App />)
+    screen.getByText('Todo List')
+    await waitFor(() => {
+      screen.getByText('Test 1')
+      screen.getByText('Test 2')
+    })
+    const checks = screen.getAllByRole('checkbox')
+    fireEvent.click(checks[0])
+    await waitFor(() => {
+      expect(checks[0]).toBeChecked()
+    })
+    fireEvent.click(screen.getByText('Mostrar no completados'))
+    screen.getByText('Test 2')
+    fireEvent.click(screen.getByText('Mostrar todos'))
+    screen.getByText('Test 1')
   })
 
 })

@@ -1,0 +1,30 @@
+.todo-list {
+  &__container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  &__meter {
+    border: 1px solid gainsboro;
+    border-radius: 4px;
+    flex-grow: 1;
+    padding: 10px;
+  }
+}
+
+.my-8 {
+  margin: 8px 0px;
+}
+
+.padding-button {
+  width: 240px;
+}
+
+@media only screen and (max-width: 768px) {
+  .todo-list {
+    &__mobile {
+      flex-direction: column;
+    }
+  }
+}

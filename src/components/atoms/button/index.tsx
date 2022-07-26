@@ -6,12 +6,11 @@ export interface ButtonProps {
   width?: string
   className?: string
   onClick?(): void
-  variant?: 'primary' | 'secondary'
+  variant?: 'primary' | 'secondary',
 }
 
 export const Button: FC<ButtonProps> = ({ id, width, className = '', onClick, children, variant = 'primary' }) => {
   return <button id={id} className={`button button-${variant} ${className}`} style={{ width }} onClick={onClick}>
     {children}
   </button>
-
 }

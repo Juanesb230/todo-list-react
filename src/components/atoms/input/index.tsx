@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react"
+import React, { FC, useEffect, useState } from "react"
 import './index.scss'
 
 export interface InputProps {
@@ -6,10 +6,11 @@ export interface InputProps {
   placeholder?: string
   width?: string
   type?: string
+  name?: string
   onChange?(value: any): void
 }
 
-export const Input: FC<InputProps> = ({ initialValue = '', type = 'text', placeholder, width, onChange = () => { } }) => {
+export const Input: FC<InputProps> = ({ initialValue = '', type = 'text', placeholder, name = 'input', width, onChange = () => { } }) => {
 
   const [value, setValue] = useState(initialValue)
 
@@ -17,15 +18,15 @@ export const Input: FC<InputProps> = ({ initialValue = '', type = 'text', placeh
     setValue(initialValue)
   }, [initialValue])
 
-  const handleOnChange = (event: any) => {
-    const val = event.target.value
-    setValue(val)
-    onChange(val)
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value }= event.target
+    setValue(value)
+    onChange(event)
   }
 
   return (
     <div style={{ width }}>
-      <input type={type} placeholder={placeholder} value={value} className='input' onChange={handleOnChange}></input>
+      <input type={type} placeholder={placeholder} value={value} name={name} className='input' onChange={handleOnChange}></input>
     </div>
   )
 

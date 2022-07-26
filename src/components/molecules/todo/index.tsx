@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import { FC } from "react"
 
 import { ITodoResponse } from "../../../models"
 import { COLORS } from "../../../shared/theme/colors"
@@ -6,6 +6,7 @@ import { COLORS } from "../../../shared/theme/colors"
 import { IconButton } from "../../atoms/icon-button"
 import Typography from "../../atoms/typography"
 import './index.scss'
+
 export interface TodoProps {
   todo: ITodoResponse
   isEven: boolean
@@ -16,23 +17,22 @@ export interface TodoProps {
 
 export const Todo: FC<TodoProps> = ({ todo, isEven, toggleComplete = () => {} , deleteTodo = () => {}, updateTodo = () => {} }) => {
 
-  const [isChecked, setisChecked] = useState(!!todo.status)
+  const textDecoration = !!todo.status ? 'line-through': 'none'
 
   const changeStatus = async () => {
-    setisChecked(!isChecked)
-    const updatedTodo = {...todo, status: !isChecked ? 1 : 0}
+    const updatedTodo = {...todo, status: !!todo.status ? 0 : 1}
     toggleComplete(updatedTodo)
   }
 
   return (
     <div className={`todo-wrapper todo-wrapper-${isEven ? 'even' : 'odd'}`}>
       <div className={`todo-wrapper-element`}>
-        <input type="checkbox" checked={isChecked} onChange={changeStatus}/>
-        <div className={`todo-wrapper-information`}>
-          <Typography color={COLORS.textColor}>
+        <input type="checkbox" checked={!!todo.status} onChange={changeStatus}/>
+        <div className={`todo-wrapper-information todo-wrapper-data`}>
+          <Typography color={COLORS.textColor} textDecoration={textDecoration}>
             {todo.description}
           </Typography>
-          <Typography color={COLORS.textColor2}>
+          <Typography color={COLORS.textColor2} textDecoration={textDecoration}>
             {todo.finish_at}
           </Typography>
         </div>

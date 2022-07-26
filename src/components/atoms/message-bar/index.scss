@@ -1,0 +1,12 @@
+.message-bar {
+  padding: 16px;
+  border-radius: 4px;
+
+  &__error {
+    background-color: red;
+  }
+
+  &__success {
+    background-color: green;
+  }
+}

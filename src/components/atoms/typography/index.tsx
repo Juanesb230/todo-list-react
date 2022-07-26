@@ -7,6 +7,7 @@ interface TypographyProps {
   color?: string
   align?: string
   lineHeight?: string;
+  textDecoration?: string
 }
 
 const Typography = styled.div<TypographyProps>`
@@ -15,6 +16,7 @@ const Typography = styled.div<TypographyProps>`
   color: ${({ color }) => color ? color : COLORS.textColor2};
   text-align: ${({ align }) => align};
   line-height:  ${({ lineHeight }) => lineHeight ? lineHeight + 'px' : '24px'};
+  text-decoration: ${({ textDecoration = 'none' }) => textDecoration};
 `
 
 export default Typography
