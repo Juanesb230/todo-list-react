@@ -9,14 +9,18 @@ import { Input } from '../../atoms/input'
 import Typography from '../../atoms/typography'
 import './index.scss'
 
+interface FormParams {
+  id?: string 
+}
+
 const TodoForm: FC = () => {
 
-  const { id = null } = useParams<any>()
+  const { id = -2 } = useParams<FormParams>()
   const history = useHistory()
   const { pathname } = useLocation()
 
   const data = useAppSelector(state => selectById(state, id))
-  const initialTodo = id ? data : { description: '', finish_at: '', status: 0 } 
+  const initialTodo = id !== -2 ? data : { description: '', finish_at: '', status: 0 } 
   const [todo, setTodo] = useState<ITodoResponse>(initialTodo as ITodoResponse)
 
   const [addNewTodo] = useAddNewTodoMutation()
