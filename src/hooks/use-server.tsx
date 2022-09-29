@@ -15,7 +15,8 @@ const serverReducer = (_state: ServerState['state'], action: ServerAction) => {
 }
 
 const useServer = () => {
-  return useReducer(serverReducer, INITIAL_STATE)
+  const [serverState, serverDispatch] = useReducer(serverReducer, INITIAL_STATE)
+  return { serverState, serverDispatch }
 }
 
 export default useServer

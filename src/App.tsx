@@ -4,8 +4,8 @@ import {
   Route,
 } from "react-router-dom";
 
-import useTodos from "./hooks/useTodos";
-import useServer from "./hooks/useServer";
+import useTodos from "./hooks/use-todos";
+import useServer from "./hooks/use-server";
 import Context from "./store";
 
 import MessageBar from "./components/atoms/message-bar";
@@ -28,7 +28,7 @@ const App = () => {
   return (
     <Context.Provider value={store}>
       <div className="app-container">
-        <MessageBar variant={serverReducer[0]} />
+        <MessageBar variant={serverReducer.serverState} />
         <Typography align='center' fontSize='40' color={COLORS.textColor} lineHeight='48' className='title'>
           Todo List
         </Typography>

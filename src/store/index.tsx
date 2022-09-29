@@ -1,6 +1,6 @@
 import { createContext } from "react"
-import { serverHook, INITIAL_STATE as serverInitialState } from "../hooks/useServer"
-import { todosHook, INITIAL_STATE as todosInitialState } from '../hooks/useTodos'
+import { serverHook, INITIAL_STATE as serverInitialState } from "../hooks/use-server"
+import { todosHook, INITIAL_STATE as todosInitialState } from '../hooks/use-todos'
 
 interface AppContextInterface {
   serverReducer: serverHook,
@@ -8,8 +8,8 @@ interface AppContextInterface {
 }
 
 const Context = createContext<AppContextInterface>({
-  serverReducer: [serverInitialState, () => {}],
-  todosReducer: [todosInitialState, () => {}]
+  serverReducer: {serverState: serverInitialState, serverDispatch: () => {}},
+  todosReducer: {todoState: todosInitialState, todoDispatch: () => {}}
 })
 
 export default Context

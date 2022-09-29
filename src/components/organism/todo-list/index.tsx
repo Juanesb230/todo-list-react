@@ -1,9 +1,6 @@
-import React, { FC, useEffect, useCallback, useContext } from 'react'
-import { useHistory } from 'react-router-dom'
+import { FC } from 'react'
 
-import Context from '../../../store';
-import { TodoService } from '../../../services/todosService';
-import { ITodoResponse } from '../../../models';
+import useTodoList from './use-todo-list';
 
 import { Button } from '../../atoms/button'
 import { Input } from '../../atoms/input';
@@ -13,54 +10,17 @@ import './index.scss'
 
 const TodoList: FC = () => {
 
-  const history = useHistory()
-  
-  const appContext = useContext(Context)
-  const serverDispatch = appContext.serverReducer[1]
-  const [todosStates, todosDispatch] = appContext.todosReducer
-  const { todos, completedFilter } = todosStates
-  const todosCompleted = todos.filter(t => t.status === 1).length
-  const total = todos.length
-
-  const refetch = useCallback(async () => {
-    const payload = await TodoService.getTodos()
-    todosDispatch({ type: 'getForServer', payload })
-  }, [todosDispatch])
-
-  useEffect(() => {
-    refetch()
-  }, [refetch])
-
-  const goToCreate = () => {
-    history.push('/create')
-  }
-
-  const redirectUpdate = (todo: ITodoResponse) => {
-    history.push(`/update/${todo.id}`)
-  }
-
-  const callServer = async (todo: ITodoResponse, type: 'updateTodo' | 'deleteTodo') => {
-    const oldTodos = todos
-    todosDispatch({ type, payload: todo })
-    try {
-      await TodoService[type](todo)
-      serverDispatch({ type: 'success' })
-    } catch (e) {
-      serverDispatch({ type: 'error' })
-      todosDispatch({ type: 'getTodos', payload: oldTodos })
-    } finally {
-      serverDispatch({ type: 'normal' })
-    }
-  }
-
-  const searchTodo = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target
-    todosDispatch({ type: 'searchTodo', payload: value })
-  }
-
-  const filterTodos = () => {
-    todosDispatch({ type: 'filterTodos' })
-  }
+  const {
+    todos,
+    todosCompleted,
+    total,
+    completedFilter,
+    goToCreate,
+    searchTodo,
+    redirectUpdate,
+    callServer,
+    filterTodos
+  } = useTodoList()
 
   return (
     <>

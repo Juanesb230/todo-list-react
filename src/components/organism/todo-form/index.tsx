@@ -1,62 +1,20 @@
-import React, { FC, useContext, useLayoutEffect } from 'react'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
-
-import Context from '../../../store'
-import { TodoService } from '../../../services/todosService'
-import useChangeForm from '../../../hooks/useTodoForm'
+import { FC } from 'react'
+import { useLocation } from 'react-router-dom'
+import useTodoForm from './use-todo-form'
 
 import { Button } from '../../atoms/button'
 import { Input } from '../../atoms/input'
 import Typography from '../../atoms/typography'
 import './index.scss'
 
-interface Params {
-  id?: string
-}
-
 const TodoForm: FC = () => {
-
-  const param: Params = useParams()
-  const history = useHistory()
   const { pathname } = useLocation()
-
-  const appContext = useContext(Context)
-  const serverDispatch = appContext.serverReducer[1]
-  const [todosStates, todosDispatch] = appContext.todosReducer
-  const [todo, formDispatch] = useChangeForm(todosStates.todo)
-
-  useLayoutEffect(() => {
-    todosDispatch({ type: 'getTodo', payload: param.id || '-1' })
-
-    return () => {
-      todosDispatch({ type: 'clearTodo' })
-    };
-  }, [todosDispatch, param.id])
-
-  useLayoutEffect(() => {
-    formDispatch({ type: 'getTodo', payload: todosStates.todo })
-  }, [formDispatch, todosStates.todo])
-
-  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name: inputName, value: inputValue } = e.target
-    formDispatch({ type: 'changeValue', payload: { inputName, inputValue } })
-  }
-
-  const serviceCallTodo = async (method: 'createTodo' | 'updateTodo') => {
-    try {
-      await TodoService[method](todo)
-      serverDispatch({ type: 'success' })
-      history.push('/')
-    } catch (e) {
-      serverDispatch({ type: 'error' })
-    } finally {
-      serverDispatch({ type: 'normal' })
-    }
-  }
-
-  const goBack = () => {
-    history.goBack()
-  }
+  const {
+    todo,
+    handleOnChange,
+    serviceCallTodo,
+    goBack
+  } = useTodoForm()
 
   return (
     <div className='todo-form'>

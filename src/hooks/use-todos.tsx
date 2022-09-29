@@ -19,6 +19,12 @@ type TodosReducerAction = {
   payload: string
 } | {
   type: "filterTodos" | "clearTodo"
+} | {
+  type: "changeTodo"
+  payload: {
+    inputName: string,
+    inputValue: string
+  }
 }
 
 export const INITIAL_STATE = {
@@ -89,11 +95,21 @@ const todosReducer = (state: TodoState, action: TodosReducerAction): TodoState =
         todos: state.serverData,
         completedFilter: !state.completedFilter
       }
+    case "changeTodo":
+      const {inputName, inputValue} = action.payload
+      return {
+        ...state,
+        todo: {
+          ...state.todo, 
+          [inputName]: inputValue
+        }
+      }
   }
 }
 
 const useTodos = () => {
-  return useReducer(todosReducer, INITIAL_STATE)
+  const [todoState, todoDispatch] = useReducer(todosReducer, INITIAL_STATE)
+  return { todoState, todoDispatch }
 }
 
 export default useTodos
