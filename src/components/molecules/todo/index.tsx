@@ -5,6 +5,7 @@ import { COLORS } from "../../../shared/theme/colors"
 import { IconButton } from "../../atoms/icon-button"
 import Typography from "../../atoms/typography"
 import './index.scss'
+
 export interface TodoProps {
   todo: ITodoResponse
   isEven: boolean

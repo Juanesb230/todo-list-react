@@ -8,10 +8,6 @@ let count = 0
 
 const handlers = [
   rest.get(BASE_URL, (_req, res, ctx) => {
-    if (mockAddTodo) {
-      mockAllTodos.push(mockAddTodo)
-      mockAddTodo = null
-    }
     const mockApiResponse = {
         data: mockAllTodos
     }
@@ -21,6 +17,7 @@ const handlers = [
     mockAddTodo = req.body as ITodoResponse
     count++
     mockAddTodo = { ...mockAddTodo, id: count }
+    mockAllTodos.push(mockAddTodo)
     const mockApiResponse = { data: mockAddTodo }
     return res(ctx.json(mockApiResponse))
   }),
