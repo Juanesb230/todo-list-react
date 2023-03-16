@@ -25,7 +25,7 @@
     "@types/react-dom": "^17.0.14",
     "@types/react-router-dom": "^5.3.3",
     "@types/styled-components": "^5.1.25",
-    "msw": "^0.42.3"
+    "msw": "^1.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -50,5 +50,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "msw": {
+    "workerDirectory": "public"
   }
 }

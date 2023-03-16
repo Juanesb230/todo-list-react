@@ -2,7 +2,7 @@ import { screen, fireEvent } from "@testing-library/react"
 import userEvent from '@testing-library/user-event'
 import App from "../App"
 import { setupStore } from '../redux/store'
-import { renderWithProviders } from './tesyUtils'
+import { renderWithProviders } from './testUtils'
 import { apiSlice } from "../redux/api/apiSlices"
 import { server } from '../__test__/server'
 
