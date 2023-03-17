@@ -22,15 +22,14 @@ const handlers = [
     return res(ctx.json(mockApiResponse))
   }),
   rest.put(`${BASE_URL}/:id`, (req, res, ctx) => {
-    const id = req.params
+    const { id } = req.params
     const body: any = req.body
-    mockAllTodos.push({...body, id: count})
+    mockAllTodos = mockAllTodos.map(m => m.id?.toString() === id ? body: m)
     const mockApiResponse = { data: {...body, id } }
-    console.log('entro')
     return res(ctx.json(mockApiResponse))
   }),
   rest.delete(`${BASE_URL}/:id`, (req, res, ctx) => {
-    const id = (req.params) as unknown as string
+    const {id } = (req.params)
     mockAllTodos = mockAllTodos.filter(m => id !== m.id?.toString())
     return res(ctx.json({data: []}))
   })

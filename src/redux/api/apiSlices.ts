@@ -97,7 +97,7 @@ export const {
 
 export const selectTodosResult = apiSlice.endpoints.getTodos.select()
 
-const selectTodosData = createSelector(
+export const selectTodosData = createSelector(
   selectTodosResult,
   todosResult => todosResult.data
 )
